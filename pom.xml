@@ -12,6 +12,7 @@
 
     <modules>
         <module>integration-service</module>
+        <module>Billing service</module>
     </modules>
 
     <properties>
