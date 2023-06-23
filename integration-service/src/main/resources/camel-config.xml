@@ -1,0 +1,40 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+    ">
+
+    <bean id="accountProcess" class="cz.pavelstibal.process.AccountProcess"/>
+
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <rest id="account-post-request" path="/CRMEvent">
+            <post consumes="application/json" path="/Account">
+                <to uri="direct:submitPostAccount"/>
+            </post>
+        </rest>
+
+        <route id="submit-post-account">
+            <from uri="direct:submitPostAccount"/>
+            <to uri="direct:processAccount"/>
+            <setHeader name="CamelHttpResponseCode">
+                <constant>204</constant>
+            </setHeader>
+        </route>
+
+        <route id="process-account">
+            <from uri="direct:processAccount" id="process-account"/>
+            <log loggingLevel="INFO" message="Received http request: method=${header.CamelHttpMethod}, url=${header.CamelHttpUrl}, body=${body}"/>
+            <unmarshal id="unmarshaller-id">
+                <json prettyPrint="true" unmarshalType="cz.pavelstibal.domain.Account" library="Jackson"/>
+            </unmarshal>
+            <process ref="accountProcess"/>
+            <log loggingLevel="INFO" message="Prepared CommonModel: ${body}"/>
+            <marshal>
+                <json prettyPrint="true" library="Jackson"/>
+            </marshal>
+            <log loggingLevel="INFO" message="Marshaled CommonModel: ${body}"/>
+        </route>
+    </camelContext>
+
+</beans>
