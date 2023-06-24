@@ -16,24 +16,26 @@ import java.util.Optional;
 @ImportResource("classpath:camel-config.xml")
 public class IntegrationServiceApp {
 
-    public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(IntegrationServiceApp.class);
-        Environment env = app.run(args).getEnvironment();
+    public static void main(final String[] args) {
+        final SpringApplication app = new SpringApplication(IntegrationServiceApp.class);
+        final Environment env = app.run(args).getEnvironment();
         logApplicationStartup(env);
     }
 
-    public static void logApplicationStartup(Environment env) {
-        String protocol = Optional.ofNullable(env.getProperty("server.ssl.key-store")).map(key -> "https").orElse("http");
-        String serverPort = env.getProperty("server.port");
-        String contextPath = Optional.ofNullable(env.getProperty("server.servlet.context-path"))
+    public static void logApplicationStartup(final Environment env) {
+        final String protocol = Optional.ofNullable(env.getProperty("server.ssl.key-store")).map(key -> "https").orElse("http");
+        final String serverPort = env.getProperty("server.port");
+        final String contextPath = Optional.ofNullable(env.getProperty("server.servlet.context-path"))
                 .filter(StringUtils::isNotBlank)
                 .orElse("/");
+
         String hostAddress = "localhost";
         try {
             hostAddress = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             log.warn("The host name could not be determined, using `localhost` as fallback");
         }
+
         log.info("""
                                                 
                         ----------------------------------------------------------
