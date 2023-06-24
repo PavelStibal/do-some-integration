@@ -6,16 +6,17 @@
     ">
 
     <bean id="accountProcess" class="cz.pavelstibal.process.AccountProcess"/>
+    <bean id="billingAccountProcess" class="cz.pavelstibal.process.BillingAccountProcess"/>
 
     <camelContext xmlns="http://camel.apache.org/schema/spring">
         <rest id="account-post-request" path="/CRMEvent">
             <post consumes="application/json" path="/Account">
-                <to uri="direct:submitPostAccount"/>
+                <to uri="direct:receivePostAccount"/>
             </post>
         </rest>
 
-        <route id="submit-post-account">
-            <from uri="direct:submitPostAccount"/>
+        <route id="receive-post-account">
+            <from uri="direct:receivePostAccount"/>
             <to uri="direct:sendAccount"/>
             <setHeader name="CamelHttpResponseCode">
                 <constant>204</constant>
@@ -40,13 +41,38 @@
         <route id="receive-account">
             <from uri="amqp:queue:cra.integration.mediation"/>
             <delay>
-                <constant>2000</constant>
+                <constant>1000</constant>
             </delay>
             <log loggingLevel="INFO" message="Received message payload: ${body}"/>
             <unmarshal>
                 <json prettyPrint="true" unmarshalType="cz.pavelstibal.domain.CommonModel" library="Jackson"/>
             </unmarshal>
             <log loggingLevel="INFO" message="Unmarshalled to CommonModel: ${body}"/>
+            <choice>
+                <when>
+                    <simple>${body.operation} == "PostAccount"</simple>
+                    <to uri="direct:billingAccount"/>
+                </when>
+            </choice>
+        </route>
+
+        <route id="billing-account">
+            <from uri="direct:billingAccount"/>
+            <process ref="billingAccountProcess"/>
+            <log loggingLevel="INFO" message="Prepared BillingAccount: ${body}"/>
+            <setHeader name="CamelHttpMethod">
+                <constant>POST</constant>
+            </setHeader>
+            <setHeader name="Content-Type">
+                <constant>application/json</constant>
+            </setHeader>
+            <marshal>
+                <json prettyPrint="true" library="Jackson"/>
+            </marshal>
+            <setHeader name="CamelHttpUri">
+                <simple>http://localhost:9090/BillingService/BillingAccount</simple>
+            </setHeader>
+            <to uri="http://localhost:9090/BillingService/BillingAccount"/>
         </route>
     </camelContext>
 

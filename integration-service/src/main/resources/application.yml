@@ -1,9 +1,9 @@
 server:
-  port: 8082
+  port: 8080
 
 spring:
   application:
-    name: Do some integration
+    name: Do some integration - Integration service
 
 service-bus:
   url: amqp://localhost:5672
