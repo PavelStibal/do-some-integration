@@ -9,10 +9,10 @@ public class CommonModelMapper {
     private static final String POST_ACCOUNT = "PostAccount";
 
     public static CommonModel toCommonModel(@Nonnull final Account account) {
-        final CommonModel commonDTO = new CommonModel();
-        commonDTO.setOperation(POST_ACCOUNT);
-        commonDTO.setApiModel(account);
-        return commonDTO;
+        final CommonModel commonModel = new CommonModel();
+        commonModel.setOperation(POST_ACCOUNT);
+        commonModel.setApiModel(account);
+        return commonModel;
     }
 
     private CommonModelMapper() {
