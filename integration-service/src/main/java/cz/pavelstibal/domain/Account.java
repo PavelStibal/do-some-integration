@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class Account implements IntegrationApiModel {
+public class Account extends IntegrationApiModel {
 
     private Long id;
 

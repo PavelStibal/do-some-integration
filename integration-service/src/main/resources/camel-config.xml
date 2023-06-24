@@ -16,14 +16,14 @@
 
         <route id="submit-post-account">
             <from uri="direct:submitPostAccount"/>
-            <to uri="direct:processAccount"/>
+            <to uri="direct:sendAccount"/>
             <setHeader name="CamelHttpResponseCode">
                 <constant>204</constant>
             </setHeader>
         </route>
 
-        <route id="process-account">
-            <from uri="direct:processAccount" id="process-account"/>
+        <route id="send-account">
+            <from uri="direct:sendAccount" id="process-account"/>
             <log loggingLevel="INFO" message="Received http request: method=${header.CamelHttpMethod}, url=${header.CamelHttpUrl}, body=${body}"/>
             <unmarshal id="unmarshaller-id">
                 <json prettyPrint="true" unmarshalType="cz.pavelstibal.domain.Account" library="Jackson"/>
@@ -34,6 +34,19 @@
                 <json prettyPrint="true" library="Jackson"/>
             </marshal>
             <log loggingLevel="INFO" message="Marshaled CommonModel: ${body}"/>
+            <to uri="amqp:queue:cra.integration.mediation"/>
+        </route>
+
+        <route id="receive-account">
+            <from uri="amqp:queue:cra.integration.mediation"/>
+            <delay>
+                <constant>2000</constant>
+            </delay>
+            <log loggingLevel="INFO" message="Received message payload: ${body}"/>
+            <unmarshal>
+                <json prettyPrint="true" unmarshalType="cz.pavelstibal.domain.CommonModel" library="Jackson"/>
+            </unmarshal>
+            <log loggingLevel="INFO" message="Unmarshalled to CommonModel: ${body}"/>
         </route>
     </camelContext>
 
