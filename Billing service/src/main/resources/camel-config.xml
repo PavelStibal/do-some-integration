@@ -1,0 +1,25 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+    ">
+
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <rest id="account-post-request" path="/BillingService">
+            <post consumes="application/json" path="/BillingAccount">
+                <to uri="direct:receiveBillingAccount"/>
+            </post>
+        </rest>
+
+        <route id="receive-billing-account">
+            <from uri="direct:receiveBillingAccount"/>
+            <log loggingLevel="INFO" message="Received http request: method=${header.CamelHttpMethod}, url=${header.CamelHttpUrl}, body=${body}"/>
+            <setHeader name="CamelHttpResponseCode">
+                <constant>201</constant>
+            </setHeader>
+        </route>
+
+    </camelContext>
+
+</beans>
