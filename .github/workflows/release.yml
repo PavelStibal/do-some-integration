@@ -11,11 +11,11 @@ jobs:
         uses: actions/checkout@v3
       - name: Set Version
         id: set_version
-        run: echo "::set-output name=version::$(semver -i patch $(cat version.yaml))"
+        run: echo "::set-output name=version::$(semver -i patch $(cat version.yml))"
       - name: Create Release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.set_version.outputs.version }}
           release_name: Release ${{ steps.set_version.outputs.version }}
