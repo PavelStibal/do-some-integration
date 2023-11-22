@@ -36,6 +36,7 @@ curl --location 'http://localhost:8080/CRMEvent/Account' --header 'Content-Type:
 ```
 
 Commands for **BillingService**:
+
 ```
 curl --location 'http://localhost:9090/BillingService/BillingAccount' --header 'Content-Type: application/json' --data '{
     "id": 12345,
