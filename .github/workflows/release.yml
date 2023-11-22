@@ -15,7 +15,7 @@ jobs:
         with:
           tag-prefix: ''
           output-file: 'false'
-          version-file: 'version.yml'
+          version-file: 'version.yaml'
       - name: Create Release
         uses: actions/create-release@v1
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
