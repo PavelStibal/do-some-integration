@@ -13,7 +13,6 @@ jobs:
         id: changelog
         uses: TriPSs/conventional-changelog-action@v4
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag-prefix: ''
           output-file: 'false'
           version-file: 'version.yaml'
